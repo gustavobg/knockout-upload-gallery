@@ -1,0 +1,91 @@
+﻿<div class="uploader" data-bind="upload: this">
+    <!-- ko ifnot: uploadSingleImage -->
+    <input type="file" class="upload-input" multiple="multiple">
+
+    <div class="upload-list" data-bind="foreach: files">
+        <div class="upload-item">
+            <!-- ko if: uploadProgress < 100 -->
+            <div class="overlay-content">
+                <div class="progressbar" style="width: 0" data-bind="style: { width: (uploadProgress() + '%') }">
+                </div>
+            </div>
+            <!-- /ko -->
+
+            <div class="overlay-content" data-bind="css: uploadStatusCss()">
+                <p class="content" data-bind="visible: uploadSuccess()">
+                    Enviado com sucesso!
+                </p>
+                <p class="content" data-bind="visible: !uploadSuccess()">
+                    Erro ao enviar! <a href="#" data-bind="attr: { title: uploadMessage() }"><i class="fa fa-question-circle"></i></a><br />
+                    <a href="#">Tentar novamente</a>
+                </p>
+            </div>
+
+
+            <div class="upload-item-content" data-bind="visible: uploadContentCss()">
+                <a href="#" data-bind="linkClick: this, attr: { href: isImage() ? '#' : serverPath() }">
+                    <div class="thumb" data-bind="style: { background: (isImage() ? 'none' : icon().color) }">
+                        <!-- ko if: isImage -->
+                        <span data-bind="visible: fileReadProgress() < 100 && serverPath().length === 0"><strong data-bind="text: fileReadProgress()"></strong></span>
+                        <img data-bind="attr: { src: imageData() ? imageData() : serverPath(), title: name }, imageLoad: this" class="no-tooltip" />
+                        <!-- /ko -->
+                        <!-- ko ifnot: isImage -->
+                        <i style="color: #fff" data-bind="attr: { class: icon().className }"></i>
+                        <!-- /ko -->
+                    </div>
+                </a>
+                <div class="content">
+                    <input type="text" class="upload-filename-input" data-bind="value: (name.length > 0 ? name : friendlyName )" />
+                </div>
+                <div class="actions">
+                    <a href="#" class="btn-material btn-sm btn-fixed-b-r btn-red" title="Excluir" data-bind="click: $parent.removeFile">
+                        <i class="material-icons">remove</i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /ko -->
+
+    <div data-bind="visible: uploadSingleImage" class="upload-image">
+        <div class="image-placeholder" data-bind="with: image">
+
+            <!-- ko if: $parent.hasImage --> 
+            <!-- ko if: uploadProgress < 100 -->
+            <div class="overlay-content">
+                <div class="progressbar" style="width: 0" data-bind="style: { width: (uploadProgress() + '%') }">
+                </div>
+            </div>
+            <!-- /ko -->
+
+            <div class="overlay-content" data-bind="css: uploadStatusCss()">
+                <p class="content" data-bind="visible: uploadSuccess()">
+                    Enviado com sucesso!
+                </p>
+                <p class="content" data-bind="visible: !uploadSuccess()">
+                    Erro ao enviar! <a href="#" data-bind="attr: { title: uploadMessage() }"><i class="fa fa-question-circle"></i></a><br />
+                    <a href="#">Tentar novamente</a>
+                </p>
+            </div>
+            <!-- /ko -->
+
+            <!-- ko ifnot: $parent.hasImage -->           
+            <a href="#" class="up-fileinput btn-camera"><i class="material-icons">local_see</i>
+                <input type="file" class="upload-input" accept="image/*" />
+            </a>
+            <!-- /ko -->
+            <!-- ko if: $parent.hasImage -->           
+            <a href="#" data-bind="linkClick: this, attr: { href: isImage() ? '#' : serverPath() }">
+                <div class="item" data-bind="style: { backgroundImage: 'url(' + (imageData() ? imageData() : serverPath()) + ')' }">
+                </div>
+            </a>
+            <!-- /ko -->
+
+            <a href="#" class="up-fileinput btn-material btn-md btn-fixed-b-r btn-green btn-bs" data-bind="visible: !$parent.hasImage()">
+                <i class="material-icons">add</i><input type="file" class="upload-input" accept="image/*" />
+            </a>
+            <a href="#" class="up-remove btn-material btn-md btn-fixed-b-r btn-red btn-bs" data-bind="visible: $parent.hasImage(), click: $parent.removeFile"><i class="material-icons">remove</i></a>
+        </div>
+    </div>
+    
+</div>

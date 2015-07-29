@@ -1,0 +1,147 @@
+.up-fileinput {
+  overflow: hidden; }
+  .up-fileinput input:hover {
+    cursor: pointer; }
+
+.upload-input, .upload-input:hover {
+  cursor: pointer; }
+
+.btn-camera {
+  position: absolute !important;
+  top: 0;
+  right: 0;
+  left: 0;
+  bottom: 0;
+  display: block;
+  color: #9E9E9E;
+  line-height: 340px;
+  text-align: center; }
+  .btn-camera i {
+    display: inline-block;
+    font-size: 4em; }
+  .btn-camera:hover {
+    color: #9E9E9E; }
+
+.image-placeholder {
+  border: solid 2px #d5d5d5;
+  background: #ebebeb;
+  width: 250px;
+  min-height: 300px;
+  overflow: hidden;
+  display: table;
+  position: relative; }
+  .image-placeholder .item {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: 100%; }
+  .image-placeholder img {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+    width: 250px; }
+
+.uploader-preview .modal-dialog {
+  width: 800px; }
+  .uploader-preview .modal-dialog .close {
+    color: #333;
+    margin-top: -8px; }
+  .uploader-preview .modal-dialog .modal-body {
+    padding: 0; }
+  .uploader-preview .modal-dialog img {
+    max-width: 100%; }
+
+.upload-list {
+  margin-top: -1px;
+  display: block;
+  padding-bottom: 10px; }
+  .upload-list .upload-item {
+    margin: 10px 10px 0 0;
+    background: #dadada;
+    min-height: 57px;
+    min-width: 300px;
+    float: left;
+    position: relative; }
+    .upload-list .upload-item .upload-item-content {
+      width: 100%;
+      display: table; }
+    .upload-list .upload-item .thumb {
+      text-align: center; }
+    .upload-list .upload-item .thumb, .upload-list .upload-item .actions, .upload-list .upload-item .content {
+      display: table-cell;
+      vertical-align: middle; }
+    .upload-list .upload-item .content {
+      padding: 0 10px; }
+      .upload-list .upload-item .content input {
+        background: none;
+        border: none;
+        border-bottom: dotted 1px transparent;
+        text-decoration: dotted; }
+        .upload-list .upload-item .content input:hover {
+          border-bottom-color: #636262; }
+        .upload-list .upload-item .content input:focus {
+          background: #fff;
+          border-bottom-color: transparent; }
+      .upload-list .upload-item .content .description {
+        margin: 0;
+        color: #333;
+        font-size: .9em; }
+      .upload-list .upload-item .content a {
+        color: #fff;
+        text-decoration: underline; }
+    .upload-list .upload-item .actions {
+      padding: 0 10px; }
+      .upload-list .upload-item .actions i {
+        font-size: 1.7em; }
+      .upload-list .upload-item .actions .btn-remove {
+        color: #F44336; }
+    .upload-list .upload-item .thumb {
+      width: 57px;
+      height: 57px;
+      overflow: hidden;
+      background: #fff; }
+      .upload-list .upload-item .thumb > i {
+        color: #333;
+        font-size: 1.7em; }
+      .upload-list .upload-item .thumb > img {
+        min-height: 57px;
+        max-width: 57px;
+        border: none; }
+    .upload-list .upload-item:last-child {
+      margin-right: 0; }
+  .upload-list .upload-preview {
+    overflow: hidden;
+    display: inline-block;
+    width: 250px;
+    height: 200px;
+    background: #333;
+    margin: 0 10px 0 0;
+    position: relative;
+    text-align: center; }
+    .upload-list .upload-preview progress {
+      background: #333; }
+    .upload-list .upload-preview .btn {
+      color: #fff; }
+    .upload-list .upload-preview .upload-actions {
+      transition: all 1s ease-in-out;
+      background: rgba(204, 204, 204, 0.8);
+      width: 100%;
+      height: 100%;
+      color: #fff;
+      position: absolute;
+      bottom: -200px;
+      left: 0; }
+    .upload-list .upload-preview:hover {
+      transition: all 1s ease-in-out; }
+      .upload-list .upload-preview:hover .upload-actions {
+        top: 0; }
+    .upload-list .upload-preview img {
+      max-width: 100%;
+      max-height: 200px; }
+
+.jcrop-keymgr {
+  opacity: 0; }

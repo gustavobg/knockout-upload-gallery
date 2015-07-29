@@ -1,0 +1,22 @@
+{
+  "name": "knockout.upload.gallery",
+  "main": "src/scripts/upload-gallery.js",
+  "version": "0.0.0",
+  "ignore": [
+    "node_modules",
+    "spec",
+    "Gruntfile.js",
+    "karma.conf.js",
+    "package.json"
+  ],
+  "dependencies": {
+    "material-design-lite": "~1.0.1",
+    "requirejs": "~2.1.19",
+    "jquery": "~2.1.4",
+    "knockout": "~3.3.0",
+    "bootbox": "~4.4.0"
+  },
+  "devDependencies": {
+    "requirejs": "*"
+  }
+}

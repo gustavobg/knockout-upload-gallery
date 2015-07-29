@@ -1,0 +1,21 @@
+{
+  "name": "noname",
+  "version": "0.0.0",
+  "private": true,
+  "devDependencies": {
+    "bower": "*",
+    "browser-sync": "^2.8.0",
+    "gulp": "^3.9.0",
+    "gulp-plumber": "^1.0.1",
+    "gulp-sass": "^2.0.4",
+    "gulp-watch": "^4.3.3",
+    "karma": "*",
+    "karma-expect": "*",
+    "karma-mocha": "*",
+    "karma-phantomjs-launcher": "*",
+    "karma-requirejs": "*"
+  },
+  "scripts": {
+    "test": "bower install && grunt test:full"
+  }
+}
