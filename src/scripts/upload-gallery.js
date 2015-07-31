@@ -1,4 +1,29 @@
-﻿ko.components.register('upload', {
+﻿var templateFromUrlLoader = {
+    loadTemplate: function (name, templateConfig, callback) {
+        if (templateConfig.fromUrl) {
+            // Uses jQuery's ajax facility to load the markup from a file
+            var fullUrl = '/templates/' + templateConfig.fromUrl + '?cacheAge=' + templateConfig.maxCacheAge;
+            $.ajax({
+                url: fullUrl,
+                type: 'GET',
+                async: true,
+                success: function (markupString) {
+                    // We need an array of DOM nodes, not a string.
+                    // We can use the default loader to convert to the
+                    // required format.
+                    ko.components.defaultLoader.loadTemplate(name, markupString, callback);
+                }
+            });
+        } else {
+            // Unrecognized config format. Let another loader handle it.
+            callback(null);
+        }
+    }
+};
+// Register loader
+ko.components.loaders.unshift(templateFromUrlLoader);
+
+ko.components.register('upload', {
     viewModel: function (params) {
         var self = this,
             array_intersect = function (a, b) {
@@ -299,30 +324,7 @@
     template: {fromUrl: 'upload.html', maxCacheAge: 9999}
 });
 
-var templateFromUrlLoader = {
-    loadTemplate: function (name, templateConfig, callback) {
-        if (templateConfig.fromUrl) {
-            // Uses jQuery's ajax facility to load the markup from a file
-            var fullUrl = '/templates/' + templateConfig.fromUrl + '?cacheAge=' + templateConfig.maxCacheAge;
-            $.ajax({
-                url: fullUrl,
-                type: 'GET',
-                async: true,
-                success: function (markupString) {
-                    // We need an array of DOM nodes, not a string.
-                    // We can use the default loader to convert to the
-                    // required format.
-                    ko.components.defaultLoader.loadTemplate(name, markupString, callback);
-                }
-            });
-        } else {
-            // Unrecognized config format. Let another loader handle it.
-            callback(null);
-        }
-    }
-};
-// Register loader
-ko.components.loaders.unshift(templateFromUrlLoader);
+
 
 ko.bindingHandlers.linkClick = {
     init: function (element, valueAccessor, allBindings, vm, bindingContext) {
