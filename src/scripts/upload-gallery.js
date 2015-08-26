@@ -52,165 +52,164 @@ ko.components.register('upload', {
             else
                 return defaultValue;
         },
-            getParamObservable = function (param) {
-                return ko.isObservable(param) ? param : ko.observable(param);
-            },
-            getParamObservableArray = function (param) {
-                return ko.isObservable(param) ? param : ko.observableArray(param);
-            },
-            getFormattedSize = function (size) {
-                if (size < 1025) { // 1000kb
-                    return Math.ceil(size / 1024) + " kb's";
+        getParamObservable = function (param) {
+            return ko.isObservable(param) ? param : ko.observable(param);
+        },
+        getParamObservableArray = function (param) {
+            return ko.isObservable(param) ? param : ko.observableArray(param);
+        },
+        getFormattedSize = function (size) {
+            if (size < 1025) { // 1000kb
+                return Math.ceil(size / 1024) + " kb's";
+            } else {
+                return Math.ceil(size / 1024 / 1024) + " mb's";
+            }
+        },
+        errorList = [],
+        // todo, refactor viewModel and js
+        fileJs = function () {
+            this.name = '';
+            this.extension = '';
+            this.friendlyName = '';
+            this.blob = null;
+            this.serverPath = '';
+            this.serverId = 0;
+            this.removed = false;
+            this.fileSize = 0;
+            this.fileReadProgress = 0;
+            this.uploadProgress = 0;
+            this.uploadStatus = 0; // 0 default, 1 success, 2 error,
+            this.uploadMessage = '';
+        },
+        isImage = function (extension) {
+            return self.imageExtensions.indexOf(extension) >= 0;
+        },
+        getExtensionByPathName = function (path) {
+            var matches = path.match(/([\w\W]*)\.([\w\d]*)$/);
+            return matches && matches.length === 3 ? matches[2] : '';
+        },
+        fileModel = function (f) {
+            var fm = this;
+            this.name = ko.observable(f.name);
+            this.blob = ko.observable(f.blob);
+            ko.computed(function () {
+                if (fm.blob())
+                    fm.name(fm.blob().name);
+            });
+            this.friendlyName = ko.observable(f.friendlyName || f.name);
+            this.serverPath = ko.observable(f.serverPath || '');
+            this.extension = ko.observable(f.extension || getExtensionByPathName(fm.serverPath()));
+            this.serverId = ko.observable(f.serverId);
+            this.removed = ko.observable(f.removed);
+            this.fileSize = ko.observable(f.fileSize);
+            this.fileReadProgress = ko.observable(f.fileReadProgress);
+            this.uploadProgress = ko.observable(f.uploadProgress);
+            this.uploadStatus = ko.observable(f.uploadStatus); // 0 default, 1 success, 2 error,
+            this.uploadMessage = ko.observable(f.uploadMessage);
+            // todo: tornar computable e se sucesso for falso, exibir mensagem e abrir opção para retentar o upload.
+            this.uploadSuccess = ko.observable();
+            this.uploadStatusCss = ko.observable('hide');
+            this.uploadContentCss = ko.observable('hide');
+
+            // Servidor deve retornar serverId, serverPath, name, extension.
+            // todo: informações abaixo podem ser extendidas
+            this.isImage = ko.observable();
+            ko.computed(function () {
+                return fm.isImage(isImage(fm.extension()));
+            }, this);
+
+            this.showUploadStatus = function () {
+                if (fm.uploadSuccess()) {
+                    fm.uploadStatusCss('success');
+                    window.setTimeout(function () {
+                        fm.uploadContentCss('show');
+                        fm.uploadStatusCss('hide');
+                    }, 1500);
                 } else {
-                    return Math.ceil(size / 1024 / 1024) + " mb's";
-                }
-            },
-            errorList = [],
-            // todo, refactor viewModel and js
-            fileJs = function () {
-                this.name = '';
-                this.extension = '';
-                this.friendlyName = '';
-                this.blob = null;
-                this.serverPath = '';
-                this.serverId = 0;
-                this.removed = false;
-                this.fileSize = 0;
-                this.fileReadProgress = 0;
-                this.uploadProgress = 0;
-                this.uploadStatus = 0; // 0 default, 1 success, 2 error,
-                this.uploadMessage = '';
-            },
-            isImage = function (extension) {
-                return self.imageExtensions.indexOf(extension) >= 0;
-            },
-            getExtensionByPathName = function (path) {
-                var matches = path.match(/([\w\W]*)\.([\w\d]*)$/);
-                return matches && matches.length === 3 ? matches[2] : '';
-            },
-            fileModel = function (f) {
-                var fm = this;
-                this.name = ko.observable(f.name);
-                this.blob = ko.observable(f.blob);
-                ko.computed(function () {
-                    if (fm.blob())
-                        fm.name(fm.blob().name);
-                });
-                this.friendlyName = ko.observable(f.friendlyName || f.name);
-                this.serverPath = ko.observable(f.serverPath || '');
-                this.extension = ko.observable(f.extension || getExtensionByPathName(fm.serverPath()));
-                this.serverId = ko.observable(f.serverId);
-                this.removed = ko.observable(f.removed);
-                this.fileSize = ko.observable(f.fileSize);
-                this.fileReadProgress = ko.observable(f.fileReadProgress);
-                this.uploadProgress = ko.observable(f.uploadProgress);
-                this.uploadStatus = ko.observable(f.uploadStatus); // 0 default, 1 success, 2 error,
-                this.uploadMessage = ko.observable(f.uploadMessage);
-                // todo: tornar computable e se sucesso for falso, exibir mensagem e abrir opção para retentar o upload.
-                this.uploadSuccess = ko.observable();
-                this.uploadStatusCss = ko.observable('hide');
-                this.uploadContentCss = ko.observable('hide');
+                    fm.uploadStatusCss('error');
+                    fm.imageData('');
+                };
+            };
 
-                // Servidor deve retornar serverId, serverPath, name, extension.
-                // todo: informações abaixo podem ser extendidas
-                this.isImage = ko.observable();
-                ko.computed(function () {
-                    return fm.isImage(isImage(fm.extension()));
-                }, this);
+            // upload file
+            fm.uploadFile = function () {
+                var xhr = new XMLHttpRequest(),
+                    formData = new FormData();
 
-                this.showUploadStatus = function () {
-                    if (fm.uploadSuccess()) {
-                        fm.uploadStatusCss('success');
-                        window.setTimeout(function () {
-                            fm.uploadContentCss('show');
-                            fm.uploadStatusCss('hide');
-                        }, 1500);
-                    } else {
-                        fm.uploadStatusCss('error');
-                        fm.imageData('');
-                    }
-                    ;
+                var reset = function () {
+                    //item.removeClass('success').removeClass('error');
                 };
 
-                // upload file
-                fm.uploadFile = function () {
-                    var xhr = new XMLHttpRequest(),
-                        formData = new FormData();
+                formData.append('file', fm.blob());
 
-                    var reset = function () {
-                        //item.removeClass('success').removeClass('error');
-                    };
-
-                    formData.append('file', fm.blob());
-
-                    if (xhr.upload) {
-                        xhr.upload.onprogress = function (e) {
-                            console.log(e.loaded, e.total);
-                            if (e.lengthComputable) {
-                                fm.uploadProgress((e.loaded / e.total * 100));
-                            }
-                        };
-                        //xhr.upload.onloadstart
-                        //xhr.upload.onload
-                        xhr.upload.onerror = function (e) {
-                            fm.uploadSuccess(false);
-                            fm.uploadMessage('Erro ao enviar arquivo');
-                            fm.showUploadStatus();
-                        };
-                    }
-                    xhr.onreadystatechange = function (e) {
-                        // complete
-                        var response = JSON.parse(e.currentTarget.response);
-
-                        fm.uploadMessage(response['Mensagem']);
-                        fm.uploadSuccess(response['Sucesso']);
-                        fm.showUploadStatus();
-
-                        // todo: parametrizar
-                        fm.serverPath(response['FilePath']);
-                        fm.name(response['Arquivo']);
-
-                        fm.uploadProgress(100);
-                    };
-
-                    xhr.open("POST", self.serverURL, true);
-                    xhr.send(formData);
-
-                };
-
-                // load image before upload to server
-                this.imageData = ko.observable();
-                ko.computed(function () {
-                    //if (!self.uploadOnSelect) {
-                    if (this.blob() && this.isImage()) {
-                        var reader = new FileReader();
-                        reader.readAsDataURL(this.blob());
-                        reader.onload = function (img) {
-                            fm.imageData(img.target.result);
-                        };
-                        reader.onprogress = function (e) {
-                            if (e.lengthComputable) {
-                                fm.fileReadProgress(Math.round((e.loaded * 100) / e.total));
-                            }
-                        };
-                        reader.onloadend = function (e) {
-                            fm.fileReadProgress(100);
-                            if (self.uploadOnSelect)
-                                fm.uploadFile();
+                if (xhr.upload) {
+                    xhr.upload.onprogress = function (e) {
+                        console.log(e.loaded, e.total);
+                        if (e.lengthComputable) {
+                            fm.uploadProgress((e.loaded / e.total * 100));
                         }
-                    } else {
+                    };
+                    //xhr.upload.onloadstart
+                    //xhr.upload.onload
+                    xhr.upload.onerror = function (e) {
+                        fm.uploadSuccess(false);
+                        fm.uploadMessage('Erro ao enviar arquivo');
+                        fm.showUploadStatus();
+                    };
+                }
+                xhr.onreadystatechange = function (e) {
+                    // complete
+                    var response = JSON.parse(e.currentTarget.response);
 
-                        if (self.uploadOnSelect && fm.serverId() == 0)
+                    fm.uploadMessage(response['Mensagem']);
+                    fm.uploadSuccess(response['Sucesso']);
+                    fm.showUploadStatus();
+
+                    // todo: parametrizar
+                    fm.serverPath(response['FilePath']);
+                    fm.name(response['Arquivo']);
+
+                    fm.uploadProgress(100);
+                };
+
+                xhr.open("POST", self.serverURL, true);
+                xhr.send(formData);
+
+            };
+
+            // load image before upload to server
+            this.imageData = ko.observable();
+            ko.computed(function () {
+                //if (!self.uploadOnSelect) {
+                if (this.blob() && this.isImage()) {
+                    var reader = new FileReader();
+                    reader.readAsDataURL(this.blob());
+                    reader.onload = function (img) {
+                        fm.imageData(img.target.result);
+                    };
+                    reader.onprogress = function (e) {
+                        if (e.lengthComputable) {
+                            fm.fileReadProgress(Math.round((e.loaded * 100) / e.total));
+                        }
+                    };
+                    reader.onloadend = function (e) {
+                        fm.fileReadProgress(100);
+                        if (self.uploadOnSelect)
                             fm.uploadFile();
                     }
+                } else {
 
-                }, this);
+                    if (self.uploadOnSelect && fm.serverId() == 0)
+                        fm.uploadFile();
+                }
 
-                this.icon = ko.computed(function () {
-                    var icon = self.fileIconExtensions[this.extension()];
-                    return icon ? icon : ['jpg', 'gif', 'png'];
-                }, this);
-            };
+            }, this);
+
+            this.icon = ko.computed(function () {
+                var icon = self.fileIconExtensions[this.extension()];
+                return icon ? icon : ['jpg', 'gif', 'png'];
+            }, this);
+        };
         //fileModel = ko.mapping.fromJS(new fileJs());
 
         self.uploadSingleImage = getParamDefault(params.uploadSingleImage, false);
@@ -316,10 +315,7 @@ ko.components.register('upload', {
             if (errorList.length > 0)
                 self.showErrors();
         };
-
         self.debug = false;
-
-
     },
     template: {fromUrl: 'upload.html', maxCacheAge: 9999}
 });
